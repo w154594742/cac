@@ -15,6 +15,8 @@ services:
       TUN_MTU: ${TUN_MTU:-9000}
       DISABLE_IPV6: ${DISABLE_IPV6:-1}
       HEALTHCHECK: ${HEALTHCHECK:-1}
+    volumes:
+      - cac-home:/root
     stdin_open: true
     tty: true
     restart: unless-stopped
@@ -24,3 +26,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
+
+volumes:
+  cac-home:

@@ -39,20 +39,13 @@ if [[ "$SINGBOX_ENABLE" == "1" ]]; then
 
   # ── Auto-detect timezone and locale from exit IP ──────────────
   _GEO_TZ="" _GEO_LANG=""
-  if python3 -m ccimage.geo 2>/dev/null > /tmp/cac-geo.sh; then
-    source /tmp/cac-geo.sh
+  _GEO_TZ="" _GEO_LANG=""
+  if python3 -m ccimage.geo 2>/dev/null > /root/.cac-env; then
+    source /root/.cac-env
     _GEO_TZ="${TZ:-}"
     _GEO_LANG="${LANG:-}"
     echo "Geo: ${TZ} / ${LANG}"
-    {
-      echo "export TZ=\"$TZ\""
-      echo "export LANG=\"$LANG\""
-      echo "export LANGUAGE=\"$LANGUAGE\""
-      echo "export LC_ALL=\"$LC_ALL\""
-      echo "export ACCEPT_LANGUAGE=\"$ACCEPT_LANGUAGE\""
-    } >> /root/.bashrc
   fi
-  rm -f /tmp/cac-geo.sh
 
   # ── Auto-setup cac: install + create profile + activate ───────
   export HOME=/root
@@ -119,13 +112,15 @@ if [[ "$SINGBOX_ENABLE" == "1" ]]; then
   export CAC_MACHINE_ID="$(cat "$_env_dir/machine_id" 2>/dev/null)"
   export CAC_USERNAME="cac-user"
 
-  # Persist for interactive shells
+  # Write all env vars to a single file, sourced by .bashrc
   {
     echo "export CAC_HOSTNAME=\"$CAC_HOSTNAME\""
     echo "export CAC_MAC=\"$CAC_MAC\""
     echo "export CAC_MACHINE_ID=\"$CAC_MACHINE_ID\""
     echo "export CAC_USERNAME=\"$CAC_USERNAME\""
-  } >> /root/.bashrc
+  } >> /root/.cac-env
+  grep -q 'cac-env' /root/.bashrc 2>/dev/null || \
+    echo '[ -f ~/.cac-env ] && source ~/.cac-env' >> /root/.bashrc
 
   if [[ "$HEALTHCHECK" == "1" ]]; then
     echo "Running startup checks..."
