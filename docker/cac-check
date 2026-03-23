@@ -92,17 +92,19 @@ check_cac() {
 }
 
 check_hostname() {
-  local real_hn spoofed_hn
-  real_hn=$(cat /etc/hostname 2>/dev/null || hostname)
-  spoofed_hn="${CAC_HOSTNAME:-not set}"
-  if [ "$spoofed_hn" != "not set" ] && [ "$spoofed_hn" != "$real_hn" ]; then
-    echo "spoofed: $spoofed_hn (real: $real_hn)"
-  elif [ "$spoofed_hn" = "not set" ]; then
-    echo "not spoofed (cac profile not active)"
-    return 1
+  local spoofed_hn
+  spoofed_hn="${CAC_HOSTNAME:-}"
+  if [ -n "$spoofed_hn" ]; then
+    echo "spoofed: $spoofed_hn"
   else
-    echo "same as real: $real_hn"
-    return 1
+    local current
+    current=$(cat "$HOME/.cac/current" 2>/dev/null || echo "")
+    if [ -z "$current" ]; then
+      echo "no profile active (run: cac add <name> <proxy> inside container)"
+    else
+      echo "not spoofed"
+      return 1
+    fi
   fi
 }
 
