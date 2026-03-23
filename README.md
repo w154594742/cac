@@ -2,7 +2,12 @@
 
 # cac — Claude Code Cloak
 
-**Privacy cloak + CLI proxy for Claude Code. Zero source invasion.**
+**Claude Code 安全套 · 无感版**
+
+开着就好，不用管。全程在线，但几乎感觉不到。
+多层隔离 + 稳定出口，为长期使用而设计。
+
+*没感觉，才是最好的保护。*
 
 **[中文](#中文) | [English](#english)**
 
