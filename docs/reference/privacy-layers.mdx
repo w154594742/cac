@@ -12,7 +12,7 @@ cac applies multiple independent protection layers. Each works on its own — to
 ┌─────────────────────────────────────────────────┐
 │  Layer 7: CLAUDE_CONFIG_DIR isolation            │  Sessions, settings, memory
 │  Layer 6: mTLS client certificates               │  Per-env cert signed by CA
-│  Layer 5: Health check bypass                    │  Local HTTPS on port 443
+│  Layer 5: Health check bypass                    │  In-process Node.js intercept
 │  Layer 4: DNS guard + fetch interception         │  Block telemetry domains
 │  Layer 3: HOSTALIASES                            │  Telemetry domains → 0.0.0.0
 │  Layer 2: 12 telemetry env vars                  │  DO_NOT_TRACK, OTEL, Sentry
@@ -88,7 +88,7 @@ Works at the `gethostbyname()` level — a backup for DNS guard.
 
 Claude Code pings `api.anthropic.com/api/hello` at startup. Through a proxy, Cloudflare returns 403.
 
-cac starts a local HTTPS server on port 443 with a certificate trusted via `NODE_EXTRA_CA_CERTS`, adds `api.anthropic.com` to `/etc/hosts` pointing to `127.0.0.1`, and adds it to `NO_PROXY`. The health check resolves instantly with HTTP 200. After 3 seconds, the bypass is cleaned up.
+cac's `dns-guard.js` intercepts `https.request` and `fetch` calls to this URL in-process and returns a fake HTTP 200 response. No local HTTPS server, no `/etc/hosts` modification, and no root privileges are needed. The interception is transparent and happens entirely within the Node.js process.
 
 Only active when proxy is configured.
 

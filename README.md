@@ -112,7 +112,7 @@ cac ls                                  # = cac env ls
 | `cac self update` | 更新 cac 自身 |
 | **其他** | |
 | `cac ls` | 列出环境（= `cac env ls`） |
-| `cac check` | 检查当前环境 |
+| `cac check` | 检查当前环境（`-d` 显示详情） |
 | `cac relay on\|off\|status` | 本地中转（绕过 TUN） |
 | `cac stop` / `cac resume` | 暂停 / 恢复保护 |
 | `cac delete` | 卸载 cac |
@@ -134,7 +134,7 @@ socks5://u:p@host:port    指定协议
 | 主机名 / MAC 隔离 | Shell shim + Node.js `os.hostname()` / `os.networkInterfaces()` hook |
 | Node.js 指纹钩子 | `fingerprint-hook.js` 通过 `NODE_OPTIONS --require` 注入 |
 | 遥测阻断 | DNS guard + 12 层环境变量 + fetch 拦截 + HOSTALIASES |
-| 健康检查 bypass | 本地 HTTPS server + `/etc/hosts` + `NO_PROXY` |
+| 健康检查 bypass | 进程内 Node.js 拦截（无需 /etc/hosts 或 root） |
 | mTLS 客户端证书 | 自签 CA + 每环境独立客户端证书 |
 | `.claude` 配置隔离 | 每个环境独立的 `CLAUDE_CONFIG_DIR` |
 
@@ -145,7 +145,7 @@ socks5://u:p@host:port    指定协议
               ┌──────────────────────────────────────────┐
   claude ────►│  CLAUDE_CONFIG_DIR → 隔离配置目录          │
               │  版本解析 → ~/.cac/versions/<ver>/claude   │
-              │  健康检查 bypass（本地 HTTPS server）       │
+              │  健康检查 bypass（进程内拦截）                │
               │  12 层遥测环境变量保护                      │──► 代理 ──► Anthropic API
               │  NODE_OPTIONS: DNS guard + 指纹钩子        │
               │  PATH: 设备指纹 shim                       │
@@ -191,7 +191,7 @@ cac docker port 6287 # 端口转发
 ### 注意事项
 
 - **首次登录**：启动 `claude` 后，输入 `/login` 完成 OAuth 授权
-- **TUN 冲突**：使用 `cac relay on` 或在 TUN 软件中为代理 IP 添加 DIRECT 规则
+- **TUN 冲突**：自动中继会自动绕过，也可手动 `cac relay on` 或在 TUN 软件中添加 DIRECT 规则
 - **IPv6**：建议系统级关闭，防止真实地址泄露
 
 ---
@@ -288,7 +288,7 @@ Each environment is fully isolated:
 | `cac self update` | Update cac itself |
 | **Other** | |
 | `cac ls` | List environments (= `cac env ls`) |
-| `cac check` | Verify current environment |
+| `cac check` | Verify current environment (`-d` for details) |
 | `cac relay on\|off\|status` | Local relay (bypass TUN) |
 | `cac stop` / `cac resume` | Pause / resume protection |
 | `cac delete` | Uninstall cac |
@@ -302,7 +302,7 @@ Each environment is fully isolated:
 | Hostname / MAC isolation | Shell shim + Node.js `os.hostname()` / `os.networkInterfaces()` hook |
 | Node.js fingerprint hook | `fingerprint-hook.js` via `NODE_OPTIONS --require` |
 | Telemetry blocking | DNS guard + 12 env vars + fetch interception + HOSTALIASES |
-| Health check bypass | Local HTTPS server + `/etc/hosts` + `NO_PROXY` |
+| Health check bypass | In-process Node.js interception (no `/etc/hosts`, no root) |
 | mTLS client certificates | Self-signed CA + per-profile client certs |
 | `.claude` config isolation | Per-environment `CLAUDE_CONFIG_DIR` |
 
@@ -313,7 +313,7 @@ Each environment is fully isolated:
               ┌──────────────────────────────────────────┐
   claude ────►│  CLAUDE_CONFIG_DIR → isolated config dir   │
               │  Version resolve → ~/.cac/versions/<ver>   │
-              │  Health check bypass (local HTTPS server)  │
+              │  Health check bypass (in-process intercept) │
               │  Env vars: 12-layer telemetry kill         │──► Proxy ──► Anthropic API
               │  NODE_OPTIONS: DNS guard + fingerprint     │
               │  PATH: device fingerprint shims            │
@@ -359,7 +359,7 @@ Proxy formats: `ip:port:user:pass` (SOCKS5), `ss://...`, `vmess://...`, `vless:/
 ### Notes
 
 - **First login**: Run `claude`, then type `/login`. Health check is automatically bypassed.
-- **TUN conflicts**: Use `cac relay on` or add DIRECT rule in your TUN software.
+- **TUN conflicts**: Auto-relay bypasses TUN automatically. You can also use `cac relay on` or add a DIRECT rule in your TUN software.
 - **IPv6**: Recommend disabling system-wide to prevent real address exposure.
 
 ---

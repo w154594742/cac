@@ -31,8 +31,9 @@ claude (user types)
   ├─ Set TZ, LANG, HOSTNAME, CAC_* identity vars
   ├─ Inject mTLS cert env vars
   │
-  ├─ [if proxy] Start health check bypass server
-  ├─ [if proxy + TUN] Start auto-relay
+  ├─ Auto-sync relay.js + JS hooks (no re-setup after upgrade)
+  ├─ [if proxy] Health check bypass (in-process interception)
+  ├─ [if proxy + TUN] Start auto-relay (bypasses TUN automatically)
   │
   ▼
 ~/.cac/versions/<ver>/claude (real binary)
