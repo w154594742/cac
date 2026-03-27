@@ -15,6 +15,7 @@
 [![npm version](https://img.shields.io/npm/v/claude-cac.svg)](https://www.npmjs.com/package/claude-cac)
 [![GitHub stars](https://img.shields.io/github/stars/nmhjklnm/cac?style=social)](https://github.com/nmhjklnm/cac)
 [![Docs](https://img.shields.io/badge/Docs-cac.nextmind.space-D97706.svg)](https://cac.nextmind.space/docs)
+[![Telegram](https://img.shields.io/badge/Telegram-Community-2CA5E0?logo=telegram)](https://t.me/claudecodecloak)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey.svg)]()
 
